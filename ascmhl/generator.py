@@ -136,7 +136,9 @@ class MHLGenerationCreationSession:
                 logger.verbose(f"  created original hash for     {relative_path}  {hash_format}: {hash_string}")
             else:
                 # flattening works a bit different, because we don't add to individual (nested) histories
-                logger.verbose(f"  created original hash for     {convert_posix_to_local_path(file_path)}  {hash_format}: {hash_string}")
+                logger.verbose(
+                    f"  created original hash for     {convert_posix_to_local_path(file_path)}  {hash_format}: {hash_string}"
+                )
         else:
             existing_hash_entry = history.find_first_hash_entry_for_path(history_relative_path, hash_format)
             if existing_hash_entry is not None:
