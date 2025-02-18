@@ -1195,18 +1195,26 @@ def flatten_history(
     if len(existing_history.hash_lists) == 0:
         raise errors.NoMHLHistoryException(root_path)
 
-    for hash_list in existing_history.hash_lists:
+    flatten_child_histories(existing_history, session, root_path)
+
+    commit_session_for_collection(
+        session, root_path, author_name, author_email, author_phone, author_role, location, comment
+    )
+
+
+def flatten_child_histories(history, session, roothistorypath, pathprefix=""):
+    for hash_list in history.hash_lists:
         for media_hash in hash_list.media_hashes:
             if not media_hash.is_directory:
                 for hash_entry in media_hash.hash_entries:
                     if hash_entry.action != "failed":
                         # check if this entry is newer than the one already in there to avoid duplicate entries
-                        found_media_hash = session.new_hash_lists[collection_history].find_media_hash_for_path(
-                            media_hash.path
+                        found_media_hash = session.new_hash_lists[session.root_history].find_media_hash_for_path(
+                            pathprefix + "/" + media_hash.path
                         )
                         if found_media_hash == None:
                             session.append_file_hash(
-                                media_hash.path,
+                                pathprefix + "/" + media_hash.path,
                                 media_hash.file_size,
                                 media_hash.last_modification_date,
                                 hash_entry.hash_format,
@@ -1222,7 +1230,7 @@ def flatten_history(
                             if not hashformat_is_already_there:
                                 # assuming that hash_entry of same type also has same hash_value ..
                                 session.append_file_hash(
-                                    media_hash.path,
+                                    pathprefix + "/" + media_hash.path,
                                     media_hash.file_size,
                                     media_hash.last_modification_date,
                                     hash_entry.hash_format,
@@ -1230,10 +1238,15 @@ def flatten_history(
                                     action=hash_entry.action,
                                     hash_date=hash_entry.hash_date,
                                 )
+    
+    for child_history in history.child_histories:
+        childpath = child_history.get_root_path()
 
-    commit_session_for_collection(
-        session, root_path, author_name, author_email, author_phone, author_role, location, comment
-    )
+        # if os.path.isabs(file_path):
+        childrelativepath = os.path.relpath(childpath, roothistorypath)
+
+        logger.info(f"\nChild History at {childrelativepath}:")
+        flatten_child_histories(child_history, session, roothistorypath, childrelativepath)
 
 
 @click.command()
