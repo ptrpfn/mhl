@@ -34,6 +34,7 @@ from .history import MHLHistory
 from .traverse import post_order_lexicographic
 from typing import Dict
 from collections import namedtuple
+from .utils import convert_local_path_to_posix
 
 
 @click.command()
@@ -1211,7 +1212,7 @@ def flatten_child_histories(history, session, roothistorypath, pathprefix=""):
                         # add prefix to media path if subhistory
                         media_path = media_hash.path
                         if pathprefix != "":
-                            media_path = pathprefix + "/" + media_hash.path
+                            media_path = convert_local_path_to_posix(pathprefix) + "/" + media_hash.path
                         # check if this entry is newer than the one already in there to avoid duplicate entries
                         found_media_hash = session.new_hash_lists[session.root_history].find_media_hash_for_path(
                             media_path
