@@ -1208,13 +1208,17 @@ def flatten_child_histories(history, session, roothistorypath, pathprefix=""):
             if not media_hash.is_directory:
                 for hash_entry in media_hash.hash_entries:
                     if hash_entry.action != "failed":
+                        # add prefix to media path if subhistory
+                        media_path = media_hash.path
+                        if pathprefix != "":
+                            media_path = pathprefix + "/" + media_hash.path
                         # check if this entry is newer than the one already in there to avoid duplicate entries
                         found_media_hash = session.new_hash_lists[session.root_history].find_media_hash_for_path(
-                            pathprefix + "/" + media_hash.path
+                            media_path
                         )
                         if found_media_hash == None:
                             session.append_file_hash(
-                                pathprefix + "/" + media_hash.path,
+                                media_path,
                                 media_hash.file_size,
                                 media_hash.last_modification_date,
                                 hash_entry.hash_format,
@@ -1230,7 +1234,7 @@ def flatten_child_histories(history, session, roothistorypath, pathprefix=""):
                             if not hashformat_is_already_there:
                                 # assuming that hash_entry of same type also has same hash_value ..
                                 session.append_file_hash(
-                                    pathprefix + "/" + media_hash.path,
+                                    media_path,
                                     media_hash.file_size,
                                     media_hash.last_modification_date,
                                     hash_entry.hash_format,
