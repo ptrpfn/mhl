@@ -10,6 +10,7 @@ __email__ = "opensource@pomfort.com"
 import os
 from click.testing import CliRunner
 from freezegun import freeze_time
+from .conftest import path_conversion_tests
 from .conftest import abspath_conversion_tests
 
 import ascmhl.commands
@@ -65,15 +66,15 @@ def test_nested(fs, nested_mhl_histories):
     # check for files in root and sub histories
     assert (
         result.output == f"Flattening folder at path: {abspath_conversion_tests('/root')} ...\n"
-        "  created original hash for     Stuff.txt  xxh64: 94c399c2a9a21f9a\n"
-        "\n"
-        "Child History at A/AA:\n"
-        "  created original hash for     A/AA/AA1.txt  xxh64: ab6bec9ec04704f6\n"
-        "\n"
-        "Child History at B:\n"
-        "  created original hash for     B/B1.txt  xxh64: 51fb8fb099e92821\n"
-        "\n"
-        "Child History at B/BB:\n"
-        "  created original hash for     B/BB/BB1.txt  xxh64: 5c14eac4f4ad7501\n"
-        "Created new generation collection_2020-01-16/packinglist_root_2020-01-16_091500Z.mhl\n"
+        f"  created original hash for     Stuff.txt  xxh64: 94c399c2a9a21f9a\n"
+        f"\n"
+        f"Child History at {path_conversion_tests('A/AA')}:\n"
+        f"  created original hash for     {path_conversion_tests('A/AA/AA1.txt')}  xxh64: ab6bec9ec04704f6\n"
+        f"\n"
+        f"Child History at B:\n"
+        f"  created original hash for     {path_conversion_tests('B/B1.txt')}  xxh64: 51fb8fb099e92821\n"
+        f"\n"
+        f"Child History at {path_conversion_tests('B/BB')}:\n"
+        f"  created original hash for     {path_conversion_tests('B/BB/BB1.txt')}  xxh64: 5c14eac4f4ad7501\n"
+        f"Created new generation {path_conversion_tests('collection_2020-01-16/packinglist_root_2020-01-16_091500Z.mhl')}\n"
     )
