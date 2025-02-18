@@ -1238,7 +1238,7 @@ def flatten_child_histories(history, session, roothistorypath, pathprefix=""):
                                     action=hash_entry.action,
                                     hash_date=hash_entry.hash_date,
                                 )
-    
+
     for child_history in history.child_histories:
         childpath = child_history.get_root_path()
 
