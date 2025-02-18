@@ -64,7 +64,7 @@ def test_nested(fs, nested_mhl_histories):
 
     # check for files in root and sub histories
     assert (
-        result.output == f"Flattening folder at path: /root ...\n"
+        result.output == f"Flattening folder at path: {abspath_conversion_tests('/root')} ...\n"
         "  created original hash for     Stuff.txt  xxh64: 94c399c2a9a21f9a\n"
         "\n"
         "Child History at A/AA:\n"
@@ -77,4 +77,3 @@ def test_nested(fs, nested_mhl_histories):
         "  created original hash for     B/BB/BB1.txt  xxh64: 5c14eac4f4ad7501\n"
         "Created new generation collection_2020-01-16/packinglist_root_2020-01-16_091500Z.mhl\n"
     )
-    
