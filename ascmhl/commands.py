@@ -1489,7 +1489,7 @@ def commit_session_for_collection(
     process_info.root_media_hash = root_hash
     process_info.hashlist_custom_basename = "packinglist_" + os.path.basename(root_path)
 
-    session.commit(creator_info, process_info)
+    session.commit(creator_info, process_info, writeChain=False)
 
 
 """

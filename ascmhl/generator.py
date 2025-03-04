@@ -7,6 +7,9 @@ __maintainer__ = "Patrick Renner, Alexander Sahm"
 __email__ = "opensource@pomfort.com"
 """
 
+import os
+import shutil
+
 from collections import defaultdict
 from typing import Dict, List
 
@@ -279,7 +282,7 @@ class MHLGenerationCreationSession:
                 hash_entry.structure_hash_string = structure_hash_string
                 parent_media_hash.append_hash_entry(hash_entry)
 
-    def commit(self, creator_info: MHLCreatorInfo, process_info: MHLProcessInfo):
+    def commit(self, creator_info: MHLCreatorInfo, process_info: MHLProcessInfo, writeChain=True):
         """
         this method needs to create the generations of the children bottom up
         # so each history can reference the children correctly and can get the actual hash of the file
@@ -313,4 +316,26 @@ class MHLGenerationCreationSession:
             if history.parent_history is not None:
                 referenced_hash_lists[history.parent_history].append(new_hash_list)
 
-            chain_xml_parser.write_chain(history.chain, new_hash_list)
+            if writeChain:
+                # regular history ....
+                chain_xml_parser.write_chain(history.chain, new_hash_list)
+            else:
+                # ... or flattened history manifest
+                root_path = os.path.dirname(new_hash_list.file_path)
+                if not os.path.exists(root_path):
+                    print(f"ERR: folder {root_path} with flattened manifest does not exist")
+                    return
+
+                parent_folder = os.path.dirname(root_path)
+
+                for file_name in os.listdir(root_path):
+                    if file_name.endswith(".mhl"):
+                        src_path = os.path.join(root_path, file_name)
+                        dst_path = os.path.join(parent_folder, file_name)
+                        shutil.move(src_path, dst_path)
+
+                # Remove the folder if empty
+                if not os.listdir(root_path):
+                    os.rmdir(root_path)
+                else:
+                    print(f"ERR: temp folder not empty, did not remove {root_path}")
