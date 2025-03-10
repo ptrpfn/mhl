@@ -251,9 +251,13 @@ def create_for_folder_subcommand(
             file_path = os.path.join(folder_path, item_name)
             not_found_paths.discard(file_path)
             for hash_list in existing_history.hash_lists:
-                for media_hash in hash_list.media_hashes:
-                    if media_hash.path == existing_history.get_relative_file_path(file_path):
-                        break
+                if detect_renaming:
+                    # this is quite costly, especially for 1000s of files <- the symptom is that the IO becomes slower and slower due to the fs system access for `get_relative_path``
+                    for media_hash in hash_list.media_hashes:
+                        if media_hash.path == existing_history.get_relative_file_path(file_path):
+                            break
+                    else:
+                        new_paths.add(file_path)
                 else:
                     new_paths.add(file_path)
             if is_dir:
